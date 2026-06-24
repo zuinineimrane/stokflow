@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockFlow — Gestion de Stock & Fournisseurs</title>
+    <meta name="description" content="Application de gestion de stock et fournisseurs. Gérez vos produits, suivez vos alertes de stock et administrez vos fournisseurs.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Ambient Background -->
+    <div class="ambient-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="ph-fill ph-cube"></i>
+                </div>
+                <span class="logo-text">Stock<span class="accent">Flow</span></span>
+            </div>
+            <button class="sidebar-close" id="sidebar-close-btn">
+                <i class="ph ph-x"></i>
+            </button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <span class="nav-label">Menu Principal</span>
+                <a href="#" class="nav-item active" data-page="dashboard" id="nav-dashboard">
+                    <i class="ph ph-squares-four"></i>
+                    <span>Tableau de Bord</span>
+                </a>
+                <a href="#" class="nav-item" data-page="produits" id="nav-produits">
+                    <i class="ph ph-package"></i>
+                    <span>Produits</span>
+                    <span class="nav-badge" id="product-count-badge">0</span>
+                </a>
+                <a href="#" class="nav-item" data-page="fournisseurs" id="nav-fournisseurs">
+                    <i class="ph ph-truck"></i>
+                    <span>Fournisseurs</span>
+                    <span class="nav-badge" id="supplier-count-badge">0</span>
+                </a>
+                <a href="#" class="nav-item" data-page="personnel" id="nav-personnel">
+                    <i class="ph ph-users"></i>
+                    <span>Utilisateurs</span>
+                </a>
+
+                <a href="#" class="nav-item" data-page="alertes" id="nav-alertes">
+                    <i class="ph ph-warning-circle"></i>
+                    <span>Alertes Stock</span>
+                    <span class="nav-badge badge-danger" id="alert-count-badge">0</span>
+                </a>
+                <a href="#" class="nav-item" data-page="guide" id="nav-guide">
+                    <i class="ph ph-book-open"></i>
+                    <span>Comment ça marche</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-footer-card">
+                <i class="ph ph-info"></i>
+                <p>Projet C → Web</p>
+                <small>Gestion de stock</small>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="main-content">
+        <!-- Top Bar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" id="menu-toggle-btn">
+                    <i class="ph ph-list"></i>
+                </button>
+                <div class="breadcrumb">
+                    <span class="breadcrumb-page" id="breadcrumb-page">Tableau de Bord</span>
+                </div>
+            </div>
+            <div class="topbar-right">
+                <div class="search-bar" id="global-search-bar">
+                    <i class="ph ph-magnifying-glass"></i>
+                    <input type="text" placeholder="Rechercher un produit..." id="global-search-input">
+                </div>
+                <div class="topbar-time" id="topbar-time"></div>
+            </div>
+        </header>
+
+        <!-- Page: Dashboard -->
+        <section class="page active" id="page-dashboard">
+            <div class="page-header">
+                <div>
+                    <h1>Tableau de Bord</h1>
+                    <p class="page-subtitle">Vue d'ensemble de votre inventaire</p>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card" id="stat-products">
+                    <div class="stat-icon blue">
+                        <i class="ph-fill ph-package"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-total-products">0</span>
+                        <span class="stat-label">Produits Total</span>
+                    </div>
+                    <div class="stat-decoration"></div>
+                </div>
+                <div class="stat-card" id="stat-suppliers">
+                    <div class="stat-icon purple">
+                        <i class="ph-fill ph-truck"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-total-suppliers">0</span>
+                        <span class="stat-label">Fournisseurs</span>
+                    </div>
+                    <div class="stat-decoration"></div>
+                </div>
+                <div class="stat-card" id="stat-alerts">
+                    <div class="stat-icon red">
+                        <i class="ph-fill ph-warning"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-total-alerts">0</span>
+                        <span class="stat-label">Alertes Stock</span>
+                    </div>
+                    <div class="stat-decoration"></div>
+                </div>
+                <div class="stat-card" id="stat-value">
+                    <div class="stat-icon green">
+                        <i class="ph-fill ph-currency-circle-dollar"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-total-value">0.00</span>
+                        <span class="stat-label">Valeur Inventaire (DA)</span>
+                    </div>
+                    <div class="stat-decoration"></div>
+                </div>
+            </div>
+
+            <!-- Recent Products + Alerts side by side -->
+            <div class="dashboard-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="ph ph-clock-counter-clockwise"></i> Derniers Produits</h3>
+                        <button class="btn-ghost" onclick="navigateTo('produits')">Voir tout <i class="ph ph-arrow-right"></i></button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-wrapper">
+                            <table class="data-table" id="dashboard-recent-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nom</th>
+                                        <th>Catégorie</th>
+                                        <th>Qté</th>
+                                        <th>Prix</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dashboard-recent-body">
+                                    <tr class="empty-row">
+                                        <td colspan="5">
+                                            <div class="empty-state-mini">
+                                                <i class="ph ph-package"></i>
+                                                <span>Aucun produit ajouté</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="ph ph-warning-circle"></i> Alertes Stock</h3>
+                        <button class="btn-ghost" onclick="navigateTo('alertes')">Voir tout <i class="ph ph-arrow-right"></i></button>
+                    </div>
+                    <div class="card-body">
+                        <div id="dashboard-alerts-list" class="alerts-list">
+                            <div class="empty-state-mini">
+                                <i class="ph ph-check-circle"></i>
+                                <span>Aucune alerte</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Page: Produits -->
+        <section class="page" id="page-produits">
+            <div class="page-header">
+                <div>
+                    <h1>Gestion des Produits</h1>
+                    <p class="page-subtitle">Ajoutez, modifiez et gérez vos produits</p>
+                </div>
+                <button class="btn btn-primary" id="btn-add-product">
+                    <i class="ph ph-plus"></i>
+                    <span>Nouveau Produit</span>
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <h3><i class="ph ph-list-dashes"></i> Liste des Produits</h3>
+                    </div>
+                    <div class="card-header-right">
+                        <div class="search-inline">
+                            <i class="ph ph-magnifying-glass"></i>
+                            <input type="text" placeholder="Rechercher..." id="product-search-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-wrapper">
+                        <table class="data-table" id="products-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nom</th>
+                                    <th>Catégorie</th>
+                                    <th>Quantité</th>
+                                    <th>Prix</th>
+                                    <th>Seuil</th>
+                                    <th>Fournisseur</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="products-body">
+                                <tr class="empty-row">
+                                    <td colspan="9">
+                                        <div class="empty-state">
+                                            <i class="ph ph-package"></i>
+                                            <h3>Aucun produit</h3>
+                                            <p>Commencez par ajouter votre premier produit</p>
+                                            <button class="btn btn-primary btn-sm" onclick="openProductModal()">
+                                                <i class="ph ph-plus"></i> Ajouter un produit
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Page: Fournisseurs -->
+        <section class="page" id="page-fournisseurs">
+            <div class="page-header">
+                <div>
+                    <h1>Gestion des Fournisseurs</h1>
+                    <p class="page-subtitle">Administrez vos partenaires fournisseurs</p>
+                </div>
+                <button class="btn btn-primary" id="btn-add-supplier">
+                    <i class="ph ph-plus"></i>
+                    <span>Nouveau Fournisseur</span>
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="ph ph-list-dashes"></i> Liste des Fournisseurs</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-wrapper">
+                        <table class="data-table" id="suppliers-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nom</th>
+                                    <th>Téléphone</th>
+                                    <th>Adresse</th>
+                                    <th>Produits liés</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="suppliers-body">
+                                <tr class="empty-row">
+                                    <td colspan="6">
+                                        <div class="empty-state">
+                                            <i class="ph ph-truck"></i>
+                                            <h3>Aucun fournisseur</h3>
+                                            <p>Commencez par ajouter votre premier fournisseur</p>
+                                            <button class="btn btn-primary btn-sm" onclick="openSupplierModal()">
+                                                <i class="ph ph-plus"></i> Ajouter un fournisseur
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Page: Personnel -->
+        <section class="page" id="page-personnel">
+            <div class="page-header">
+                <div>
+                    <h1>Gestion des Utilisateurs</h1>
+                    <p class="page-subtitle">Consultez et gérez l'équipe de gestion</p>
+                </div>
+                <button class="btn btn-primary" id="btn-add-personnel">
+                    <i class="ph ph-plus"></i>
+                    <span>Nouveau Utilisateur</span>
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="ph ph-users-three"></i> Membres de l'Équipe</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-wrapper">
+                        <table class="data-table" id="personnel-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nom Complet</th>
+                                    <th>Rôle / Poste</th>
+                                    <th>Email</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="personnel-body">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+        <!-- Page: Alertes -->
+        <section class="page" id="page-alertes">
+            <div class="page-header">
+                <div>
+                    <h1>Alertes de Stock</h1>
+                    <p class="page-subtitle">Produits dont la quantité est ≤ au seuil d'alerte</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="ph ph-warning-circle"></i> Produits en Alerte</h3>
+                </div>
+                <div class="card-body">
+                    <div id="alerts-full-list" class="alerts-full-list">
+                        <div class="empty-state">
+                            <i class="ph ph-check-circle"></i>
+                            <h3>Tout va bien !</h3>
+                            <p>Aucun produit n'est en dessous du seuil d'alerte</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Page: Guide -->
+        <section class="page" id="page-guide">
+            <div class="page-header">
+                <div>
+                    <h1>Comment ça marche ?</h1>
+                    <p class="page-subtitle">Comprendre l'architecture technique de StockFlow</p>
+                </div>
+            </div>
+
+            <div class="guide-grid">
+                <div class="card guide-card">
+                    <div class="guide-icon">
+                        <i class="ph ph-cpu"></i>
+                    </div>
+                    <h3>Le Cœur en C</h3>
+                    <p>Le moteur de l'application est écrit en langage <strong>C</strong>. Il utilise des structures de données performantes (<strong>listes doublement chaînées</strong>) pour gérer les produits et les fournisseurs en mémoire vive.</p>
+                </div>
+
+                <div class="card guide-card">
+                    <div class="guide-icon">
+                        <i class="ph ph-globe"></i>
+                    </div>
+                    <h3>Serveur HTTP Natif</h3>
+                    <p>Le programme C intègre son propre serveur web (utilisant <strong>Winsock2</strong>). Il écoute vos requêtes et sert directement les fichiers HTML, CSS et JS sans avoir besoin d'un serveur externe comme Apache ou Nginx.</p>
+                </div>
+
+                <div class="card guide-card">
+                    <div class="guide-icon">
+                        <i class="ph ph-code"></i>
+                    </div>
+                    <h3>API JSON & Fetch</h3>
+                    <p>L'interface web communique avec le serveur C via des appels <strong>API JSON</strong>. Chaque fois que vous ajoutez ou modifiez un produit, le navigateur envoie une requête <code>fetch()</code> au programme C qui traite la logique métier.</p>
+                </div>
+
+                <div class="card guide-card">
+                    <div class="guide-icon">
+                        <i class="ph ph-palette"></i>
+                    </div>
+                    <h3>Interface Moderne</h3>
+                    <p>Bien que le backend soit en C, l'interface utilise les technologies web modernes (<strong>HTML5, CSS3, JS Vanilla</strong>) pour offrir une expérience utilisateur fluide, réactive et élégante.</p>
+                </div>
+            </div>
+
+            <div class="card guide-logic">
+                <div class="card-header">
+                    <h3><i class="ph ph-tree-structure"></i> Flux de Données</h3>
+                </div>
+                <div class="card-body logic-content">
+                    <div class="logic-step">
+                        <span class="step-num">1</span>
+                        <div class="step-text">
+                            <strong>Action Utilisateur</strong>
+                            <p>Vous cliquez sur "Ajouter un produit" dans l'interface.</p>
+                        </div>
+                    </div>
+                    <i class="ph ph-arrow-right logic-arrow"></i>
+                    <div class="logic-step">
+                        <span class="step-num">2</span>
+                        <div class="step-text">
+                            <strong>Requête Frontend</strong>
+                            <p>Le JavaScript envoie les données au serveur C via une requête POST.</p>
+                        </div>
+                    </div>
+                    <i class="ph ph-arrow-right logic-arrow"></i>
+                    <div class="logic-step">
+                        <span class="step-num">3</span>
+                        <div class="step-text">
+                            <strong>Traitement Backend (C)</strong>
+                            <p>Le serveur C alloue la mémoire (malloc) et insère le produit dans la liste chaînée.</p>
+                        </div>
+                    </div>
+                    <i class="ph ph-arrow-right logic-arrow"></i>
+                    <div class="logic-step">
+                        <span class="step-num">4</span>
+                        <div class="step-text">
+                            <strong>Réponse & Affichage</strong>
+                            <p>Le serveur renvoie une confirmation JSON et l'interface se met à jour instantanément.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal: Add/Edit Product -->
+    <div class="modal-overlay" id="product-modal-overlay">
+        <div class="modal" id="product-modal">
+            <div class="modal-header">
+                <h2 id="product-modal-title"><i class="ph ph-package"></i> Nouveau Produit</h2>
+                <button class="modal-close" id="product-modal-close">
+                    <i class="ph ph-x"></i>
+                </button>
+            </div>
+            <form class="modal-body" id="product-form">
+                <input type="hidden" id="product-edit-id" value="">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="product-name">Nom du produit</label>
+                        <input type="text" id="product-name" placeholder="Ex: Clavier mécanique" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-category">Catégorie</label>
+                        <input type="text" id="product-category" placeholder="Ex: Informatique" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-price">Prix (DA)</label>
+                        <input type="number" step="0.01" min="0" id="product-price" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-quantity">Quantité</label>
+                        <input type="number" min="0" id="product-quantity" placeholder="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-threshold">Seuil d'alerte</label>
+                        <input type="number" min="0" id="product-threshold" placeholder="5" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-supplier">Fournisseur</label>
+                        <select id="product-supplier" required>
+                            <option value="">-- Sélectionner --</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="product-cancel-btn">Annuler</button>
+                    <button type="submit" class="btn btn-primary" id="product-submit-btn">
+                        <i class="ph ph-check"></i> Ajouter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Add Supplier -->
+    <div class="modal-overlay" id="supplier-modal-overlay">
+        <div class="modal" id="supplier-modal">
+            <div class="modal-header">
+                <h2 id="supplier-modal-title"><i class="ph ph-truck"></i> Nouveau Fournisseur</h2>
+                <button class="modal-close" id="supplier-modal-close">
+                    <i class="ph ph-x"></i>
+                </button>
+            </div>
+            <form class="modal-body" id="supplier-form">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="supplier-name">Nom du fournisseur</label>
+                        <input type="text" id="supplier-name" placeholder="Ex: TechDistrib SARL" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="supplier-phone">Téléphone</label>
+                        <input type="text" id="supplier-phone" placeholder="Ex: 0555 123 456" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="supplier-address">Adresse</label>
+                        <input type="text" id="supplier-address" placeholder="Ex: Alger, Zone Industrielle" required>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="supplier-cancel-btn">Annuler</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="ph ph-check"></i> Ajouter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    </div>
+
+    <!-- Modal: Add Personnel -->
+    <div class="modal-overlay" id="personnel-modal-overlay">
+        <div class="modal" id="personnel-modal">
+            <div class="modal-header">
+                <h2><i class="ph ph-user-plus"></i> Nouveau Utilisateur</h2>
+                <button class="modal-close" id="personnel-modal-close">
+                    <i class="ph ph-x"></i>
+                </button>
+            </div>
+            <form class="modal-body" id="personnel-form">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="personnel-name">Nom Complet</label>
+                        <input type="text" id="personnel-name" placeholder="Ex: Ahmed Mansouri" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="personnel-role">Rôle / Poste</label>
+                        <input type="text" id="personnel-role" placeholder="Ex: Administrateur" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="personnel-email">Email Professional</label>
+                        <input type="email" id="personnel-email" placeholder="Ex: ahmed@stockflow.dz" required>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="personnel-cancel-btn">Annuler</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="ph ph-check"></i> Ajouter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Confirm Delete -->
+    <div class="modal-overlay" id="delete-modal-overlay">
+        <div class="modal modal-sm" id="delete-modal">
+            <div class="modal-header danger">
+                <h2><i class="ph ph-trash"></i> Confirmer la suppression</h2>
+                <button class="modal-close" id="delete-modal-close">
+                    <i class="ph ph-x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="delete-message" id="delete-message">Êtes-vous sûr de vouloir supprimer cet élément ?</p>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" id="delete-cancel-btn">Annuler</button>
+                    <button class="btn btn-danger" id="delete-confirm-btn">
+                        <i class="ph ph-trash"></i> Supprimer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
