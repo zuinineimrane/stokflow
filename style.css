@@ -3,6 +3,10 @@
    ═══════════════════════════════════════════ */
 
 /* ── CSS Variables ── */
+
+body {
+    background-color: #00a86b;
+}
 :root {
     /* ── Professional Zinc & Indigo Palette ── */
     --bg-primary: #09090b;
